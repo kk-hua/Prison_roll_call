@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="isNullStringSize">20sp</dimen>
+    <dimen name="widget_space">16dp</dimen>
+    <dimen name="text_size">18sp</dimen>
+    <dimen name="text_size2">14sp</dimen>
+</resources>

@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Prison_roll_call</string>
+    <string name="null_string">列表为空！</string>
+    <string name="main_open_search">open</string>
+    <string name="main_close_search">close</string>
+    <string name="main_import_file">导入文件</string>
+    <string name="main_export_file">导出文件</string>
+    <string name="file_name">文件名</string>
+    <string name="file_path">文件路径</string>
+    <string name="SDCardActivity_title">文件列表</string>
+    <string name="uncalled">未到</string>
+    <string name="has_to">已到</string>
+</resources>

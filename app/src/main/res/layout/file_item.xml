@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linear_file_item"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/widget_space"
+    tools:context=".activity.SDCardActivity"
+    tools:ignore="UseCompoundDrawables">
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="@dimen/widget_space"
+        android:background="@drawable/rc_file_icon_file"
+        tools:ignore="ContentDescription" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_file_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:text="@string/file_name"
+            android:textColor="@color/balck"
+            android:textSize="@dimen/text_size" />
+
+        <TextView
+            android:id="@+id/tv_file_path"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/file_path"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/text_size2" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

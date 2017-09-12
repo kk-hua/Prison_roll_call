@@ -105,7 +105,7 @@ public class UncalledFragment extends Fragment implements OnRecyclerViewItemClic
      * 初始化
      */
     private void init() {
-        mUncalledAdapter = new UncalledAdapter(getContext().getApplicationContext(),mNameList);
+        mUncalledAdapter = new UncalledAdapter(getContext().getApplicationContext(),mPeopleRollList);
         mUncalledRecycle.setLayoutManager(new LinearLayoutManager(getContext()));
         mUncalledRecycle.setAdapter(mUncalledAdapter);
     }

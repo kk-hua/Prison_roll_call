@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.shrw.duke.prison_roll_call.R;
+import com.shrw.duke.prison_roll_call.entity.PeopleRoll;
 import com.shrw.duke.prison_roll_call.listener.OnRecyclerViewItemClickListener;
 
 import java.util.ArrayList;
@@ -18,13 +19,14 @@ import java.util.List;
  * Created by rw-duke on 2017/9/12.
  */
 
-public class UncalledAdapter extends RecyclerView.Adapter implements View.OnClickListener{
+public class UncalledAdapter extends RecyclerView.Adapter implements View.OnClickListener {
 
     private Context mContext;
-    private List<String> mNames = new ArrayList<>();
+    private List<PeopleRoll> mNames = new ArrayList<>();
     private OnRecyclerViewItemClickListener mOnItemClickListener;
+    private int size;
 
-    public UncalledAdapter(Context mContext, List<String> mNames) {
+    public UncalledAdapter(Context mContext, List<PeopleRoll> mNames) {
         this.mContext = mContext;
         this.mNames = mNames;
     }
@@ -45,7 +47,7 @@ public class UncalledAdapter extends RecyclerView.Adapter implements View.OnClic
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         MyViewHolder viewHolder = (MyViewHolder) holder;
-        viewHolder.tv_name.setText(mNames.get(position));
+        viewHolder.tv_name.setText(mNames.get(position).getName());
         viewHolder.itemView.setTag(position);
     }
 
@@ -75,7 +77,77 @@ public class UncalledAdapter extends RecyclerView.Adapter implements View.OnClic
 
     }
 
+    /**
+     * 设置item点击监听
+     *
+     * @param listener
+     */
     public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
         this.mOnItemClickListener = listener;
     }
+
+    public boolean add(PeopleRoll peopleRoll){
+        if (!contains(peopleRoll.getRfid())){
+            return mNames.add(peopleRoll);
+        }
+        return false;
+    }
+    /**
+     *
+     * @param s
+     * @return
+     */
+    public boolean remove(String s) {
+        size = getItemCount();
+        PeopleRoll peopleRoll = null;
+        String rfid;
+        if (s == null) {
+            for (int index = 0; index < size; index++) {
+                peopleRoll = mNames.get(index);
+                rfid = peopleRoll.getRfid();
+                if (rfid == null) {
+                    mNames.remove(index);
+                    return true;
+                }
+            }
+
+        } else {
+            for (int index = 0; index < size; index++){
+                peopleRoll = mNames.get(index);
+                rfid = peopleRoll.getRfid();
+                if (rfid.equals(s)){
+                    mNames.remove(index);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean contains(String id){
+        return indexOf(id)>=0;
+    }
+
+    private int indexOf(String id) {
+        size = getItemCount();
+        PeopleRoll peopleRoll;
+        String rfid;
+        if (id == null) {
+            for (int i = 0; i < size; i++){
+                peopleRoll = mNames.get(i);
+                rfid = peopleRoll.getRfid();
+                if (rfid == null)
+                    return i;
+            }
+        } else {
+            for (int i = 0; i < size; i++){
+                peopleRoll = mNames.get(i);
+                rfid = peopleRoll.getRfid();
+                if (rfid.equals(id))
+                    return i;
+            }
+        }
+        return -1;
+    }
+
 }

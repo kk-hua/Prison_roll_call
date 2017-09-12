@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.shrw.duke.prison_roll_call.R;
 import com.shrw.duke.prison_roll_call.entity.FileInfo;
+import com.shrw.duke.prison_roll_call.listener.OnRecyclerViewItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,8 +88,5 @@ public class SDCardAdapter extends RecyclerView.Adapter implements View.OnClickL
         this.mOnItemClickListener = listener;
     }
 
-    //define interface
-    public interface OnRecyclerViewItemClickListener {
-        void onItemClick(View view, int position, FileInfo data);
-    }
+
 }

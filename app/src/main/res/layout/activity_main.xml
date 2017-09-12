@@ -6,15 +6,53 @@
     android:layout_height="match_parent"
     tools:context="com.shrw.duke.prison_roll_call.activity.MainActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycle_list"
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/recycle_list"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:visibility="gone"/>-->
+    <!--<include layout="@layout/main_content_layout"/>-->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:layout_gravity="center"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:id="@+id/linear_content">
 
-    <include layout="@layout/main_content_layout"/>
+        <!--<android.support.v4.view.ViewPager-->
+            <!--android:id="@+id/viewPager"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:layout_weight="1" />-->
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/fragment"
+            android:layout_weight="1"/>
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/tab_uncalled"
+                style="@style/tab_style"
+
+                android:drawableTop="@mipmap/ic_launcher"
+                android:text="@string/uncalled" />
+
+            <RadioButton
+                android:id="@+id/tab_has_to"
+                style="@style/tab_style"
+                android:drawableTop="@mipmap/ic_launcher"
+                android:text="@string/has_to" />
+        </RadioGroup>
+    </LinearLayout>
     <TextView
         android:id="@+id/tv_is_null"
         android:layout_width="wrap_content"
@@ -23,4 +61,6 @@
         android:textSize="@dimen/isNullStringSize"
         android:layout_gravity="center"
         android:visibility="visible" />
+
+
 </FrameLayout>

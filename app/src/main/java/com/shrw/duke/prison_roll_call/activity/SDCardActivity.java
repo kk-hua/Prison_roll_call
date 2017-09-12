@@ -15,6 +15,7 @@ import com.shrw.duke.prison_roll_call.R;
 import com.shrw.duke.prison_roll_call.adapter.SDCardAdapter;
 import com.shrw.duke.prison_roll_call.common.Constant;
 import com.shrw.duke.prison_roll_call.entity.FileInfo;
+import com.shrw.duke.prison_roll_call.listener.OnRecyclerViewItemClickListener;
 import com.shrw.duke.prison_roll_call.utils.FileUtil;
 
 import org.w3c.dom.Text;
@@ -33,7 +34,7 @@ import rx.schedulers.Schedulers;
 
 import static com.shrw.duke.prison_roll_call.utils.FileUtil.listFiles;
 
-public class SDCardActivity extends AppCompatActivity implements SDCardAdapter.OnRecyclerViewItemClickListener {
+public class SDCardActivity extends AppCompatActivity implements OnRecyclerViewItemClickListener {
     private static final String TAG = SDCardActivity.class.getSimpleName();
     public static final String FILE_PATH = "file_path";
 

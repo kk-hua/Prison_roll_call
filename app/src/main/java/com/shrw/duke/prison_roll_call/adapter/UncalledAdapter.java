@@ -46,6 +46,7 @@ public class UncalledAdapter extends RecyclerView.Adapter implements View.OnClic
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         MyViewHolder viewHolder = (MyViewHolder) holder;
         viewHolder.tv_name.setText(mNames.get(position));
+        viewHolder.itemView.setTag(position);
     }
 
 
@@ -56,7 +57,10 @@ public class UncalledAdapter extends RecyclerView.Adapter implements View.OnClic
 
     @Override
     public void onClick(View v) {
-
+        if (mOnItemClickListener != null) {
+            //注意这里使用getTag方法获取数据
+            mOnItemClickListener.onItemClick(v, (int) v.getTag(), mNames.get((int) v.getTag()));
+        }
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {

@@ -30,7 +30,9 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
     private List<PeopleRoll> mPeoples;
     private List<String> mRfidNumberList;
     private List<String> mNameList;
+    private Map<String,PeopleRoll> mPeopleRollMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
             }
             //第一次自动选择未到页面
             if (mNameList!=null&&mNameList.size()>0){
-                getSupportFragmentManager().beginTransaction().add(R.id.fragment, UncalledFragment.newInstance(mNameList)).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.fragment, UncalledFragment.newInstance(mPeoples)).commit();
             }else {
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment, new UncalledFragment()).commit();
             }
@@ -175,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
         mPeoples = new ArrayList<>();
         mRfidNumberList= new ArrayList<>();
         mNameList = new ArrayList<>();
+        mPeopleRollMap = new HashMap<>();
         String[] files = fileContent.replace(" ", "\\t").split("\\n");
         int len = files.length;
         Log.w(TAG, Arrays.toString(files));
@@ -184,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
             String[] rows = files[i].split("\\t");
             if (rows.length==6) {
                 PeopleRoll peopleRoll = new PeopleRoll(rows[0], rows[1], rows[2], rows[3], rows[4], rows[5]);
+                mPeopleRollMap.put(peopleRoll.getRfid(),peopleRoll);
                 mPeoples.add(peopleRoll);
                 mRfidNumberList.add(peopleRoll.getRfid());
                 mNameList.add(peopleRoll.getName());
@@ -212,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 
             case R.id.tab_uncalled:
                 if (mCurrentPage != v.getId()) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment, UncalledFragment.newInstance(mNameList)).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment, UncalledFragment.newInstance(mPeoples)).commit();
                     mCurrentPage = v.getId();
                 }
                 break;

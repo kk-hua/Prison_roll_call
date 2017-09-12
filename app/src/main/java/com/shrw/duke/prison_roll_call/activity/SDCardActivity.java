@@ -34,7 +34,7 @@ import rx.schedulers.Schedulers;
 
 import static com.shrw.duke.prison_roll_call.utils.FileUtil.listFiles;
 
-public class SDCardActivity extends AppCompatActivity implements OnRecyclerViewItemClickListener {
+public class SDCardActivity extends AppCompatActivity implements OnRecyclerViewItemClickListener<FileInfo> {
     private static final String TAG = SDCardActivity.class.getSimpleName();
     public static final String FILE_PATH = "file_path";
 

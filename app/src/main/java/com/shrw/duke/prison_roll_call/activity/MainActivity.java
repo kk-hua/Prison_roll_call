@@ -375,6 +375,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                     StringBuilder sbRssi= new StringBuilder(mSendCMD);
                     sbRssi.replace(16,18,"43");
                     sbRssi.replace(mSendCMD.length()-4,mSendCMD.length()-2,rssi);
+                    cmd = "43";
                     mPortManager.write(sbRssi.toString());
                 }
                 break;
@@ -462,6 +463,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
     @Override
     public void onDismiss(DialogInterface dialog) {
         close();
+        cmd = "41";
     }
 
     // TODO: 2017/9/11 页面布局

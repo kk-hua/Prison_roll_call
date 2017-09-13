@@ -11,7 +11,7 @@ import com.shrw.duke.prison_roll_call.utils.PreferencesUtils;
  */
 
 public class RollCallApplication extends Application {
-    private  Context mContext;
+    private static RollCallApplication mContext;
     public static String mFilePath;
 
     @Override
@@ -21,7 +21,7 @@ public class RollCallApplication extends Application {
         mFilePath = PreferencesUtils.getString(mContext, Constant.FILE_PATH,null);
     }
 
-    public Context getApplicationContext(){
+    public static RollCallApplication getContext(){
         return mContext;
     }
 }

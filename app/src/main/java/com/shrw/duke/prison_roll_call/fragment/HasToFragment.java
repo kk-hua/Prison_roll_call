@@ -3,61 +3,48 @@ package com.shrw.duke.prison_roll_call.fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.shrw.duke.prison_roll_call.R;
+import com.shrw.duke.prison_roll_call.adapter.UncalledAdapter;
+import com.shrw.duke.prison_roll_call.entity.PeopleRoll;
+import com.shrw.duke.prison_roll_call.listener.OnActivityOrFragmentArgListener;
+import com.shrw.duke.prison_roll_call.utils.ListUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+import static android.content.ContentValues.TAG;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link HasToFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link HasToFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
-public class HasToFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class HasToFragment extends Fragment implements OnActivityOrFragmentArgListener<PeopleRoll> {
+    @BindView(R.id.hasToFragment_recycler_list)
+    RecyclerView mHasToRecycler;
+    @BindView(R.id.tv_hasTo_peopleNum)
+    TextView mPeopleNum;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private UncalledAdapter mAdapter;
 
-    private OnFragmentInteractionListener mListener;
+    private OnActivityOrFragmentArgListener mListener;
 
-    public HasToFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HasToFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static HasToFragment newInstance(String param1, String param2) {
-        HasToFragment fragment = new HasToFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    public static List<PeopleRoll> mPeopleRollList = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -65,25 +52,31 @@ public class HasToFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_has_to, container, false);
+        View view = inflater.inflate(R.layout.fragment_has_to, container, false);
+        ButterKnife.bind(this, view);
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mPeopleNum.setText(String.valueOf(mPeopleRollList.size()));
+        mAdapter = new UncalledAdapter(getContext(), mPeopleRollList);
+        mHasToRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        mHasToRecycler.setAdapter(mAdapter);
+
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
+        if (context instanceof OnActivityOrFragmentArgListener) {
+            mListener = (OnActivityOrFragmentArgListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnActivityOrFragmentArgListener");
+        }
     }
 
     @Override
@@ -92,18 +85,16 @@ public class HasToFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+
+    @Override
+    public void onData(Context context, PeopleRoll data) {
+        if (!ListUtils.contains(mPeopleRollList, data.getRfid()))
+            mPeopleRollList.add(data);
+        if (mAdapter != null) {
+            mPeopleNum.setText(String.valueOf(mPeopleRollList.size()));
+            mAdapter.notifyDataSetChanged();
+        }
+        Log.i("HasToFragment:\t", data.toString());
     }
+
 }

@@ -80,8 +80,8 @@ public class SerialPort {
 
     public native static int GetPlatform();
 
-//    static {
-//        System.loadLibrary("serial_port");
-//    }
+    static {
+        System.loadLibrary("serial_port");
+    }
 
 }

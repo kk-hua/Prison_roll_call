@@ -22,13 +22,18 @@ import java.util.List;
 public class UncalledAdapter extends RecyclerView.Adapter implements View.OnClickListener {
 
     private Context mContext;
-    private List<PeopleRoll> mNames = new ArrayList<>();
+    private List<PeopleRoll> mNames;
     private OnRecyclerViewItemClickListener mOnItemClickListener;
     private int size;
 
     public UncalledAdapter(Context mContext, List<PeopleRoll> mNames) {
         this.mContext = mContext;
         this.mNames = mNames;
+    }
+
+    public UncalledAdapter(Context context) {
+        this.mContext = context;
+        mNames = new ArrayList<>();
     }
 
     @Override
@@ -124,6 +129,11 @@ public class UncalledAdapter extends RecyclerView.Adapter implements View.OnClic
         return false;
     }
 
+    /**
+     * 是否包含这个id的对象
+     * @param id    标签rfid编号
+     * @return  true：已经存在   false:不存在
+     */
     public boolean contains(String id){
         return indexOf(id)>=0;
     }

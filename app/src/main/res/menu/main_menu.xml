@@ -8,6 +8,10 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/main_setting"
+        android:title="@string/main_setting"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/main_import"
         android:title="@string/main_import_file"
         app:showAsAction="never"/>

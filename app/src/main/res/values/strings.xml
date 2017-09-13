@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Prison_roll_call</string>
+    <string name="app_name">蜜蜂考勤</string>
     <string name="null_string">请选择文件！</string>
     <string name="main_open_search">open</string>
     <string name="main_close_search">close</string>
@@ -13,4 +13,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="open_port_fail">打开串口失败</string>
+    <string name="searching">正在搜索中。。</string>
+    <string name="main_setting">设置</string>
+    <string name="not_is_null">不能为空</string>
 </resources>

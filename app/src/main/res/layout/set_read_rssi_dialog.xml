@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+
+    android:background="@color/divider"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="设置读取范围"
+        android:textSize="20sp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/divider"
+        android:id="@+id/tv_title"/>
+
+    <EditText
+        android:id="@+id/textInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_title"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:textSize="18sp"
+        android:layout_marginBottom="10dp"
+        android:hint="场强范围（1～100）"
+        android:inputType="number" />
+
+    <!--<android.support.design.widget.TextInputLayout-->
+        <!--android:id="@+id/textInputLayout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@+id/tv_title"-->
+        <!--android:paddingLeft="@dimen/is10dp"-->
+        <!--android:paddingRight="@dimen/is10dp"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_centerVertical="true">-->
+
+        <!--<android.support.design.widget.TextInputEditText-->
+            <!--android:id="@+id/edit_rssi"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_marginBottom="68dp"-->
+            <!--android:hint="场强范围（1～100）"-->
+            <!--android:inputType="number" />-->
+    <!--</android.support.design.widget.TextInputLayout>-->
+
+
+    <android.support.v4.widget.Space
+        android:id="@+id/space"
+        android:layout_width="30dp"
+        android:layout_height="10dp"
+        android:layout_below="@+id/textInputLayout"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/btn_read"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textInputLayout"
+        android:layout_toLeftOf="@+id/space"
+        android:layout_toStartOf="@+id/space"
+        android:text="读取" />
+
+    <Button
+        android:id="@+id/btn_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textInputLayout"
+        android:layout_toEndOf="@+id/space"
+        android:layout_toRightOf="@+id/space"
+        android:text="设置" />
+
+
+</RelativeLayout>

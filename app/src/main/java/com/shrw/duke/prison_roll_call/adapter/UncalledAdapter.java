@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.shrw.duke.prison_roll_call.R;
 import com.shrw.duke.prison_roll_call.entity.PeopleRoll;
 import com.shrw.duke.prison_roll_call.listener.OnRecyclerViewItemClickListener;
+import com.shrw.duke.prison_roll_call.listener.OnRecyclerViewItemLongClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +20,12 @@ import java.util.List;
  * Created by rw-duke on 2017/9/12.
  */
 
-public class UncalledAdapter extends RecyclerView.Adapter implements View.OnClickListener {
+public class UncalledAdapter extends RecyclerView.Adapter implements View.OnClickListener,View.OnLongClickListener {
 
     private Context mContext;
     private List<PeopleRoll> mNames;
     private OnRecyclerViewItemClickListener mOnItemClickListener;
+    private OnRecyclerViewItemLongClickListener mOnItemLongClickListener;
     private int size;
 
     public UncalledAdapter(Context mContext, List<PeopleRoll> mNames) {
@@ -46,6 +48,7 @@ public class UncalledAdapter extends RecyclerView.Adapter implements View.OnClic
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         view.setLayoutParams(lp);
         view.setOnClickListener(this);
+        view.setOnLongClickListener(this);
         return holder;
     }
 
@@ -54,6 +57,7 @@ public class UncalledAdapter extends RecyclerView.Adapter implements View.OnClic
         MyViewHolder viewHolder = (MyViewHolder) holder;
         viewHolder.tv_name.setText(mNames.get(position).getName());
         viewHolder.itemView.setTag(position);
+//        viewHolder.itemView.setBackgroundResource(R.drawable.bg_item_long_click);
     }
 
 
@@ -68,6 +72,15 @@ public class UncalledAdapter extends RecyclerView.Adapter implements View.OnClic
             //注意这里使用getTag方法获取数据
             mOnItemClickListener.onItemClick(v, (int) v.getTag(), mNames.get((int) v.getTag()));
         }
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        if (mOnItemLongClickListener !=null){
+            mOnItemLongClickListener.onItemLongClick(v, (int) v.getTag(),mNames.get((int) v.getTag()));
+//            return true;
+        }
+        return false;
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
@@ -89,6 +102,14 @@ public class UncalledAdapter extends RecyclerView.Adapter implements View.OnClic
      */
     public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {
         this.mOnItemClickListener = listener;
+    }
+    /**
+     * 设置item长按监听
+     *
+     * @param listener
+     */
+    public void setOnItemLongClickListener(OnRecyclerViewItemLongClickListener listener) {
+        this.mOnItemLongClickListener = listener;
     }
 
     public boolean add(PeopleRoll peopleRoll){

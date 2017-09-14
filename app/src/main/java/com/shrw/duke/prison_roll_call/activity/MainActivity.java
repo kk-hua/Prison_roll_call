@@ -1,17 +1,11 @@
 package com.shrw.duke.prison_roll_call.activity;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.nfc.Tag;
-import android.support.design.widget.TextInputEditText;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -34,6 +28,8 @@ import com.shrw.duke.portlibrary.common.utils.TagGenerator;
 import com.shrw.duke.portlibrary.control.port.PortManager;
 import com.shrw.duke.prison_roll_call.R;
 import com.shrw.duke.prison_roll_call.RollCallApplication;
+import com.shrw.duke.prison_roll_call.common.MessageType;
+import com.shrw.duke.prison_roll_call.entity.Note;
 import com.shrw.duke.prison_roll_call.entity.PeopleRoll;
 import com.shrw.duke.prison_roll_call.fragment.HasToFragment;
 import com.shrw.duke.prison_roll_call.fragment.UncalledFragment;
@@ -43,28 +39,20 @@ import com.shrw.duke.prison_roll_call.utils.ListUtils;
 import com.shrw.duke.prison_roll_call.utils.PreferencesUtils;
 import com.shrw.duke.prison_roll_call.utils.ToastUtil;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 import static com.shrw.duke.prison_roll_call.common.Constant.SDCARD_RESULT_CODE;
 import static com.shrw.duke.prison_roll_call.common.Constant.SDCard_REQUEST_CODE;
-import static com.shrw.duke.prison_roll_call.common.Constant.SEND_CMD;
 
-public class MainActivity extends AppCompatActivity implements CompoundButton.OnClickListener, ReadCallback,OnActivityOrFragmentArgListener<String>, DialogInterface.OnDismissListener {
+public class MainActivity extends AppCompatActivity implements CompoundButton.OnClickListener, ReadCallback, OnActivityOrFragmentArgListener<Object>, DialogInterface.OnDismissListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -88,7 +76,12 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
     private List<PeopleRoll> mPeoples;
     private List<String> mRfidNumberList;
     private List<String> mNameList;
-    private Map<String,PeopleRoll> mPeopleRollMap;
+    private Map<String, PeopleRoll> mPeopleRollMap;
+    private Note mNote;//考勤报告
+    private List<PeopleRoll> mUncalledHint;//未到人员备注
+    private int mHasTo = 0;
+    private int mCount = 0;
+
 
     private PortManager mPortManager;//串口管理工具
     private IGenerator mGenerator;
@@ -96,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 
 
     private String cmd = "";
-    private String mSendCMD="";
+    private String mSendCMD = "";
 
     private OnActivityOrFragmentArgListener mUncalledFragmentArgListener = null;
     private OnActivityOrFragmentArgListener mHasToFragmentArgListener = null;
@@ -125,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
         mPortManager.powerUp();
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -136,28 +130,27 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 
         switch (item.getItemId()) {
             case R.id.main_search:  //扫描
-                if (item.getTitle().equals(getString(R.string.main_open_search))){
-                    if (open()){
+                if (item.getTitle().equals(getString(R.string.main_open_search)) && !mPortManager.isIsSearch()) {
+                    if (open()) {
                         item.setTitle(R.string.main_close_search);
                         cmd = "41";
                     }
 
 
-                }else {
+                } else {
                     close();
                     item.setTitle(R.string.main_open_search);
                 }
                 break;
 
             case R.id.main_setting:  //设置
-                if (mPortManager.isIsSearch()){
+                if (mPortManager.isIsSearch()) {
                     ToastUtil.showToast(getString(R.string.searching));
                     return super.onOptionsItemSelected(item);
                 }
                 builder = new AlertDialog.Builder(MainActivity.this).create();
                 builder.show();
-                builder.getWindow().setContentView(R.layout.set_read_rssi_dialog);//设置弹出框加载的布局
-//                ButterKnife.bind(this,builder);
+                builder.getWindow().setContentView(R.layout.dialog_setting_rssi);//设置弹出框加载的布局
 
                 mEditText = (EditText) builder.findViewById(R.id.textInputLayout);
                 mBtnRead = (Button) builder.findViewById(R.id.btn_read);
@@ -172,17 +165,20 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                 break;
 
             case R.id.main_import:  //导入
-                if (mPortManager.isIsSearch()){
+                if (mPortManager.isIsSearch()) {
                     ToastUtil.showToast(getString(R.string.searching));
                     return super.onOptionsItemSelected(item);
                 }
                 startActivityForResult(new Intent(MainActivity.this, SDCardActivity.class), SDCard_REQUEST_CODE);
                 break;
             case R.id.main_export:  //导出
-                if (mPortManager.isIsSearch()){
+                if (mPortManager.isIsSearch()) {
                     ToastUtil.showToast(getString(R.string.searching));
                     return super.onOptionsItemSelected(item);
+
                 }
+                ToastUtil.showToast("总："+mCount+"\t已："+mHasTo+"\t未："+mUncalledHint.size());
+                Log.e("mUncalledHint:",mUncalledHint.toString());
                 break;
 
         }
@@ -227,8 +223,8 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
     /**
      * 打开串口
      */
-    private boolean open(){
-        if (mPortManager!=null){
+    private boolean open() {
+        if (mPortManager != null) {
             mPortManager.powerUp();
             try {
                 mPortManager.openSerialPort();
@@ -245,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
     /**
      * 关闭串口
      */
-    private void close(){
+    private void close() {
         mPortManager.stopRead();
         mPortManager.closeSerialPort();
         mPortManager.powerDown();
@@ -260,6 +256,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
         //构建已到人员页面
         mHasToFragment = new HasToFragment();
         mHasToFragmentArgListener = mHasToFragment;
+
 
         //设置监听
         mRbUncalled.setOnClickListener(this);
@@ -286,18 +283,18 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
             mTv_null.setVisibility(View.GONE);
             mLinear.setVisibility(View.VISIBLE);
 
-            if (mPeoples==null||mPeoples.size()==0){
+            if (mPeoples == null || mPeoples.size() == 0) {
                 String fileContent = FileUtil.readFileContent(mFilePath, "utf-8", "\n", 1024);
-                if (!TextUtils.isEmpty(fileContent)){
+                if (!TextUtils.isEmpty(fileContent)) {
                     splitFileContent(fileContent);
                 }
             }
             //第一次自动选择未到页面
-            if (mNameList!=null&&mNameList.size()>0){
+            if (mNameList != null && mNameList.size() > 0) {
                 mUncalledFragment = UncalledFragment.newInstance(mPeoples);
                 mUncalledFragmentArgListener = mUncalledFragment;
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment, mUncalledFragment).commit();
-            }else {
+            } else {
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment, new UncalledFragment()).commit();
             }
             mCurrentPage = mRbUncalled.getId();
@@ -309,9 +306,12 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
     private List<String> splitFileContent(String fileContent) {
         HasToFragment.mPeopleRollList.clear();
         mPeoples = new ArrayList<>();
-        mRfidNumberList= new ArrayList<>();
+        mRfidNumberList = new ArrayList<>();
         mNameList = new ArrayList<>();
         mPeopleRollMap = new HashMap<>();
+
+        mHasTo = 0;
+
         String[] files = fileContent.replace(" ", "\\t").split("\\n");
         int len = files.length;
         Log.w(TAG, Arrays.toString(files));
@@ -319,9 +319,9 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
             //行
             Log.w(TAG + "rows:", files[i]);
             String[] rows = files[i].split("\\t");
-            if (rows.length==6) {
+            if (rows.length == 6 && "0".equals(rows[4])) {
                 PeopleRoll peopleRoll = new PeopleRoll(rows[0], rows[1], rows[2], rows[3], rows[4], rows[5]);
-                mPeopleRollMap.put(peopleRoll.getRfid(),peopleRoll);
+                mPeopleRollMap.put(peopleRoll.getRfid(), peopleRoll);
                 mPeoples.add(peopleRoll);
                 mRfidNumberList.add(peopleRoll.getRfid());
                 mNameList.add(peopleRoll.getName());
@@ -330,6 +330,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 //            Log.w(TAG + "arg:", arg);
 
         }
+        mCount = mPeoples.size();
         return null;
     }
 
@@ -360,21 +361,21 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                 break;
 
             case R.id.btn_read:
-                if (mPortManager.isIsSearch()){
+                if (mPortManager.isIsSearch()) {
                     mPortManager.write(Constant.READ_ARG_CMD);
                 }
                 break;
             case R.id.btn_send:
-                if (mPortManager.isIsSearch()){
+                if (mPortManager.isIsSearch()) {
                     String rssi = mEditText.getText().toString();
                     if (TextUtils.isEmpty(rssi))
                         ToastUtil.showToast(getString(R.string.not_is_null));
-                    if (TextUtils.isEmpty(mSendCMD)){
+                    if (TextUtils.isEmpty(mSendCMD)) {
                         mSendCMD = com.shrw.duke.prison_roll_call.common.Constant.SEND_CMD;
                     }
-                    StringBuilder sbRssi= new StringBuilder(mSendCMD);
-                    sbRssi.replace(16,18,"43");
-                    sbRssi.replace(mSendCMD.length()-4,mSendCMD.length()-2,rssi);
+                    StringBuilder sbRssi = new StringBuilder(mSendCMD);
+                    sbRssi.replace(16, 18, "43");
+                    sbRssi.replace(mSendCMD.length() - 4, mSendCMD.length() - 2, rssi);
                     cmd = "43";
                     mPortManager.write(sbRssi.toString());
                 }
@@ -384,21 +385,22 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 
     /**
      * 接收串口数据
+     *
      * @param buffer
      * @param size
      */
     @Override
     public void exec(byte[] buffer, int size) {
-        final String data = Parse.toHexString(buffer,size);
-        if (data.length()<18)
+        final String data = Parse.toHexString(buffer, size);
+        if (data.length() < 18)
             return;
-        Log.d(TAG+"\t数据1",data);
+        Log.d(TAG + "\t数据1", data);
 
-        switch (cmd){
+        switch (cmd) {
             case "41":
                 //读取标签
                 TagBase18 people = (TagBase18) mTag.parseTag(data);
-                if (people!=null){
+                if (people != null) {
                     List<TagBase18.Tag18> tags = people.getTags();
                     int len = tags.size();
                     for (int i = 0; i < len; i++) {
@@ -406,36 +408,48 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                if (mUncalledFragmentArgListener!=null&&tag!=null)
-                                    mUncalledFragmentArgListener.onData(MainActivity.this,tag);
+                                if (mUncalledFragmentArgListener != null && tag != null)
+                                    mUncalledFragmentArgListener.onData(MainActivity.this, tag,
+                                            com.shrw.duke.prison_roll_call.common.Constant.PORT_DATA_TYPE);
                             }
                         });
 
 //                tag.getTagId();
                     }
-                    Log.d(TAG+"\t数据2",people.toString());
+                    Log.d(TAG + "\t数据2", people.toString());
                 }
                 break;
             case "44":
                 //读取参数
-                String cmd = data.substring(16,18);
-                if (this.cmd.equals(cmd)){
+                String cmd = data.substring(16, 18);
+                if (this.cmd.equals(cmd)) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (mEditText!=null){
-                                mEditText.setText(data.substring(data.length()-4,data.length()-2));
+                            if (mEditText != null) {
+                                mEditText.setText(data.substring(data.length() - 4, data.length() - 2));
                             }
                         }
                     });
-//                    Log.d("读取数据：",data);
+                    Log.d("读取数据：", data);
                 }
                 break;
             case "43":
                 //更改参数
-                String cmd1 = data.substring(16,18);
-                if (cmd1.equals(this.cmd)){
-                    Log.d("读取数据：",data);
+                String cmd1 = data.substring(16, 18);
+                if (cmd1.equals(this.cmd)) {
+                    final String confirmBit = data.substring(data.length() - 6, data.length() - 2).toUpperCase();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if ("4F4B".equals(confirmBit)) {
+                                ToastUtil.showToast(getString(R.string.write_suecces));
+                            } else {
+                                ToastUtil.showToast(getString(R.string.write_fail));
+                            }
+                        }
+                    });
+//                    Log.d("读取数据：",data);
                 }
                 break;
         }
@@ -443,20 +457,47 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 
     /**
      * 已到人员
+     *
      * @param context
-     * @param rfid  已到人员rfid编号
+     * @param o       data
      */
     @Override
-    public void onData(Context context, String rfid) {
-        if (mHasToFragmentArgListener!=null){
-            int index = ListUtils.indexOf(mPeoples,rfid);
-            if (index>=0){
-                PeopleRoll people = mPeoples.get(index);
-                mHasToFragmentArgListener.onData(this,people);
-                Log.e(TAG+"\t",people.toString());
-            }
-            Log.e(TAG+"\t",rfid);
+    public void onData(Context context, Object o, int type) {
+        switch (type) {
+            case com.shrw.duke.prison_roll_call.common.Constant.HAS_TO_TYPE:
+                //UncalledFragment-->this
+                if (mHasToFragmentArgListener != null) {
+                    int index = ListUtils.indexOf(mPeoples, (String) o);
+                    if (index >= 0) {
+                        mHasTo++;
+                        PeopleRoll people = mPeoples.get(index);
+                        mHasToFragmentArgListener.onData(this, people, com.shrw.duke.prison_roll_call.common.Constant.HAS_TO_TYPE);
+//                        Log.e(TAG + "\t", people.toString());
+                    }
+                    Log.e(TAG + "\t", (String) o);
+                }
+                break;
+
+            case com.shrw.duke.prison_roll_call.common.Constant.NOTE_TYPE:
+                //UncalledFragment-->this
+                if (mNote == null || mUncalledHint == null && mUncalledHint.size() == 0) {
+                    //考勤报告
+                    mNote = new Note();
+                    mUncalledHint = new ArrayList<>();//未到人员备注
+                }
+                if (mHasToFragmentArgListener != null) {
+                    mUncalledHint = (List<PeopleRoll>) o;
+                }
+                break;
+
+            case com.shrw.duke.prison_roll_call.common.Constant.UNCALLED_TYPE:
+                //HasToFragment-->this
+                break;
+
+            default:
+                break;
         }
+
 
     }
 

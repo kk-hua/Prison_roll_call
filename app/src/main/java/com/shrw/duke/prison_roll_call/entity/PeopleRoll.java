@@ -14,6 +14,7 @@ public class PeopleRoll implements Parcelable{
     private String room;    //归属区中文名称
     private String type;       //0：犯人  1：警员
     private String level;      //管理级别
+    private String note;
 
     public PeopleRoll() {
     }
@@ -27,6 +28,17 @@ public class PeopleRoll implements Parcelable{
         this.level = level;
     }
 
+    public PeopleRoll(String name, String carid,  String rfid, String room, String type, String level, String note) {
+        this.name = name;
+        this.carid = carid;
+        this.rfid = rfid;
+        this.room = room;
+        this.type = type;
+        this.level = level;
+        this.note = note;
+    }
+
+
     protected PeopleRoll(Parcel in) {
         name = in.readString();
         carid = in.readString();
@@ -34,6 +46,7 @@ public class PeopleRoll implements Parcelable{
         room = in.readString();
         type = in.readString();
         level = in.readString();
+        note = in.readString();
     }
 
     public static final Creator<PeopleRoll> CREATOR = new Creator<PeopleRoll>() {
@@ -96,6 +109,14 @@ public class PeopleRoll implements Parcelable{
         this.level = level;
     }
 
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
     @Override
     public String toString() {
         return "PeopleRoll{" +
@@ -103,8 +124,9 @@ public class PeopleRoll implements Parcelable{
                 ", carid='" + carid + '\'' +
                 ", rfid='" + rfid + '\'' +
                 ", room='" + room + '\'' +
-                ", type=" + type +
-                ", level=" + level +
+                ", type='" + type + '\'' +
+                ", level='" + level + '\'' +
+                ", note='" + note + '\'' +
                 '}';
     }
 
@@ -121,5 +143,6 @@ public class PeopleRoll implements Parcelable{
         dest.writeString(room);
         dest.writeString(type);
         dest.writeString(level);
+        dest.writeString(note);
     }
 }

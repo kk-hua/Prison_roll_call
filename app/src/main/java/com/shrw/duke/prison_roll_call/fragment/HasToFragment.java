@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.shrw.duke.prison_roll_call.R;
 import com.shrw.duke.prison_roll_call.adapter.UncalledAdapter;
+import com.shrw.duke.prison_roll_call.common.Constant;
 import com.shrw.duke.prison_roll_call.entity.PeopleRoll;
 import com.shrw.duke.prison_roll_call.listener.OnActivityOrFragmentArgListener;
 import com.shrw.duke.prison_roll_call.utils.ListUtils;
@@ -87,13 +88,27 @@ public class HasToFragment extends Fragment implements OnActivityOrFragmentArgLi
 
 
     @Override
-    public void onData(Context context, PeopleRoll data) {
-        if (!ListUtils.contains(mPeopleRollList, data.getRfid()))
-            mPeopleRollList.add(data);
-        if (mAdapter != null) {
-            mPeopleNum.setText(String.valueOf(mPeopleRollList.size()));
-            mAdapter.notifyDataSetChanged();
+    public void onData(Context context, PeopleRoll data, int type) {
+
+        switch (type){
+            case Constant.HAS_TO_TYPE:
+                if (!ListUtils.contains(mPeopleRollList, data.getRfid()))
+                    mPeopleRollList.add(data);
+                if (mAdapter != null) {
+                    mPeopleNum.setText(String.valueOf(mPeopleRollList.size()));
+                    mAdapter.notifyDataSetChanged();
+                }
+                break;
+            default:
+                break;
         }
+
+//        if (!ListUtils.contains(mPeopleRollList, data.getRfid()))
+//            mPeopleRollList.add(data);
+//        if (mAdapter != null) {
+//            mPeopleNum.setText(String.valueOf(mPeopleRollList.size()));
+//            mAdapter.notifyDataSetChanged();
+//        }
         Log.i("HasToFragment:\t", data.toString());
     }
 

@@ -20,4 +20,10 @@
         <item name="android:textColor">@drawable/tab_text_color</item>
         <item name="android:textSize">14sp</item>
     </style>
+
+    <style name="summary_hint_text_style">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/divider</item>
+        <item name="android:layout_marginBottom">@dimen/is4dp</item>
+    </style>
 </resources>

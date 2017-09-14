@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/is4dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_dialog_name"
+        style="@style/summary_hint_text_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/summary_name" />
+
+    <TextView
+        android:id="@+id/tv_dialog_carid"
+        style="@style/summary_hint_text_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/summary_carid" />
+
+    <TextView
+        android:id="@+id/tv_dialog_rfid"
+        style="@style/summary_hint_text_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/summary_rfid" />
+
+    <TextView
+        android:id="@+id/tv_dialog_room"
+        style="@style/summary_hint_text_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/summary_room" />
+
+    <TextView
+        android:id="@+id/tv_dialog_type"
+        style="@style/summary_hint_text_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/summary_type" />
+
+    <TextView
+        android:id="@+id/tv_dialog_level"
+        style="@style/summary_hint_text_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/summary_level" />
+
+    <EditText
+        android:id="@+id/edit_dialog_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/summary_note_hint" />
+</LinearLayout>

@@ -237,8 +237,8 @@ public class UncalledFragment extends Fragment implements OnRecyclerViewItemClic
                             if (!TextUtils.isEmpty(strNote)) {
                                 mEditPeopleFlag.setNote(strNote);
                                 int index = ListUtils.indexOf(mPeopleRollList, mEditPeopleFlag.getRfid());
-                                mPeopleRollList.add(index, mEditPeopleFlag);
-                                mMainActivityArgListener.onData(getContext(), mPeopleRollList, Constant.NOTE_TYPE);
+                                mPeopleRollList.set(index, mEditPeopleFlag);
+//                                mMainActivityArgListener.onData(getContext(), mPeopleRollList, Constant.NOTE_TYPE);
 
                             } else {
                                 ToastUtil.showToast(getString(R.string.not_is_null));
@@ -280,6 +280,13 @@ public class UncalledFragment extends Fragment implements OnRecyclerViewItemClic
         if (data != null) {
             mEditPeopleFlag = data;
         }
+    }
+
+    public List<PeopleRoll> getUnCalledPeopleRool(){
+        if (mPeopleRollList!=null){
+            return mPeopleRollList;
+        }
+        return null;
     }
 
 

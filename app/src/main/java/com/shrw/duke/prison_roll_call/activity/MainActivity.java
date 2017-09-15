@@ -39,6 +39,7 @@ import com.shrw.duke.prison_roll_call.utils.ListUtils;
 import com.shrw.duke.prison_roll_call.utils.PreferencesUtils;
 import com.shrw.duke.prison_roll_call.utils.ToastUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +56,7 @@ import static com.shrw.duke.prison_roll_call.common.Constant.SDCard_REQUEST_CODE
 public class MainActivity extends AppCompatActivity implements CompoundButton.OnClickListener, ReadCallback, OnActivityOrFragmentArgListener<Object>, DialogInterface.OnDismissListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
 
     @BindView(R.id.tv_is_null)
     TextView mTv_null;
@@ -133,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                 if (item.getTitle().equals(getString(R.string.main_open_search)) && !mPortManager.isIsSearch()) {
                     if (open()) {
                         item.setTitle(R.string.main_close_search);
+                        item.setIcon(R.drawable.ic_hdr_strong_white_24dp);
                         cmd = "41";
                     }
 
@@ -140,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                 } else {
                     close();
                     item.setTitle(R.string.main_open_search);
+                    item.setIcon(R.drawable.ic_hdr_weak_white_24dp);
                 }
                 break;
 
@@ -177,8 +181,83 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                     return super.onOptionsItemSelected(item);
 
                 }
-                ToastUtil.showToast("总："+mCount+"\t已："+mHasTo+"\t未："+mUncalledHint.size());
-                Log.e("mUncalledHint:",mUncalledHint.toString());
+                if (mUncalledHint == null && mUncalledFragment != null) {
+                    mUncalledHint = mUncalledFragment.getUnCalledPeopleRool();
+                }
+
+                final View view = getLayoutInflater().inflate(R.layout.dialog_save_file, null);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setView(view);
+                builder.setTitle(R.string.save_file);
+                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d("bbbbbbbbfe",new File(com.shrw.duke.prison_roll_call.common.Constant.saveNoteFilePath).exists()+"");
+//                        if (){
+//
+//                        }
+                        EditText editRename = (EditText) view.findViewById(R.id.dialog_rename_file);
+                        TextView editFilePath = (TextView) view.findViewById(R.id.dialog_file_path);
+                        String fileName = editRename.getText().toString();
+                        editFilePath.setText(com.shrw.duke.prison_roll_call.common.Constant.saveNoteFilePath);
+                        final StringBuilder filePath = new StringBuilder(com.shrw.duke.prison_roll_call.common.Constant.saveNoteFilePath);
+                        filePath.append(fileName);
+                        filePath.append(".txt");
+                        final StringBuilder content = new StringBuilder();
+                        content.append("应到" + mCount + "人\n");
+                        content.append("实到" + mHasTo + "人\n");
+                        content.append("未到" + mUncalledHint.size() + "人\n");
+                        content.append("备注：");
+                        for (PeopleRoll p : mUncalledHint) {
+                            content.append("\n\t姓名：" + p.getName() + "\trfid：" + p.getRfid() + "\t类别："
+                                    + p.getType() + "\n未到原因：" + p.getNote());
+
+                        }
+                        final String path = filePath.toString();
+                        final String text = content.toString();
+                        if (FileUtil.isFileExists(filePath.toString())){
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setTitle("提示");
+                            builder.setMessage(R.string.isFileExists);
+                            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    if (FileUtil.writeFileFromString(path, text)){
+                                        ToastUtil.showToast(getString(R.string.save_success));
+                                    }else {
+                                        ToastUtil.showToast(getString(R.string.save_fail));
+                                    }
+                                }
+                            });
+                            builder.show();
+                            return;
+                        }
+
+                        Log.e("mUncalledHint:", "path:" + filePath + "\t" + content.toString());
+                        if (FileUtil.writeFileFromString(filePath.toString(), content.toString())){
+                            ToastUtil.showToast(getString(R.string.save_success));
+                        }else {
+                            ToastUtil.showToast(getString(R.string.save_fail));
+                        }
+
+                    }
+                });
+                builder.show();
+
+//                ToastUtil.showToast("总：" + mCount + "\t已：" + mHasTo + "\t未：" + mUncalledHint.size());
+//                Log.e("mUncalledHint:", mUncalledHint.toString());
                 break;
 
         }
@@ -251,6 +330,8 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
      * 初始化
      */
     private void init() {
+        RollCallApplication.getContext().addActivity(this);
+
         //文件路径
         mFilePath = RollCallApplication.mFilePath;
         //构建已到人员页面
@@ -506,6 +587,30 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
         close();
         cmd = "41";
     }
+
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        Log.e("bvnv","onBackPressed()");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("退出");
+        builder.setMessage("是否退出应用？");
+        builder.setCancelable(false);
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                RollCallApplication.getContext().exit();
+            }
+        });
+        builder.show();
+    }
+
 
     // TODO: 2017/9/11 页面布局
     // TODO: 2017/9/11 读取txt文件

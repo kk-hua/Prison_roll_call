@@ -12,11 +12,13 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.shrw.duke.prison_roll_call.R;
+import com.shrw.duke.prison_roll_call.RollCallApplication;
 import com.shrw.duke.prison_roll_call.adapter.SDCardAdapter;
 import com.shrw.duke.prison_roll_call.common.Constant;
 import com.shrw.duke.prison_roll_call.entity.FileInfo;
 import com.shrw.duke.prison_roll_call.listener.OnRecyclerViewItemClickListener;
 import com.shrw.duke.prison_roll_call.utils.FileUtil;
+import com.shrw.duke.prison_roll_call.utils.ToastUtil;
 
 import org.w3c.dom.Text;
 
@@ -51,6 +53,8 @@ public class SDCardActivity extends AppCompatActivity implements OnRecyclerViewI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sdcard);
         ButterKnife.bind(this);
+
+        RollCallApplication.getContext().addActivity(this);
 
         //列表初始化
         mSDCardAdapter = new SDCardAdapter(this, files);
@@ -122,11 +126,15 @@ public class SDCardActivity extends AppCompatActivity implements OnRecyclerViewI
      */
     @Override
     public void onItemClick(View view, int position, FileInfo data) {
-        Log.d(TAG, position + "");
         if (!TextUtils.isEmpty(data.getFilePath())){
+            if (!"roster.txt".equals(data.getFileName())){
+                ToastUtil.showToast("文件选择错误，请选择roster.txt");
+                return;
+            }
             Intent intent = new Intent(SDCardActivity.this,MainActivity.class);
             Bundle bundle = new Bundle();
             bundle.putString(FILE_PATH,data.getFilePath());
+//            bundle.putString(FILE_PATH,data.getFileName());
             intent.putExtras(bundle);
             setResult(Constant.SDCARD_RESULT_CODE,intent);
             finish();

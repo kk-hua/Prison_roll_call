@@ -16,5 +16,5 @@
     <!--<item android:color="@color/white" android:state_selected="true"></item>-->
     <!--<item android:color="@color/balck" android:state_selected="false"></item>-->
     <item android:color="@color/balck" android:state_checked="false"></item>
-    <item android:color="@color/white" android:state_checked="true"></item>
+    <item android:color="@color/divider2" android:state_checked="true"></item>
 </selector>

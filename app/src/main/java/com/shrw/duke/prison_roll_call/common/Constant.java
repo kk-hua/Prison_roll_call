@@ -1,5 +1,7 @@
 package com.shrw.duke.prison_roll_call.common;
 
+import android.os.Environment;
+
 /**
  * Created by rw-duke on 2017/9/11.
  */
@@ -17,4 +19,7 @@ public class Constant {
 
     //43指令
     public static final String SEND_CMD = "0203040500190000430000FF011F00050000001A011200FFBB";
+
+    public static final String saveNoteFilePath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/PrisonRoolCall/";
+
 }

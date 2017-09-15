@@ -109,7 +109,7 @@ public class HasToFragment extends Fragment implements OnActivityOrFragmentArgLi
 //            mPeopleNum.setText(String.valueOf(mPeopleRollList.size()));
 //            mAdapter.notifyDataSetChanged();
 //        }
-        Log.i("HasToFragment:\t", data.toString());
+//        Log.i("HasToFragment:\t", data.toString());
     }
 
 }

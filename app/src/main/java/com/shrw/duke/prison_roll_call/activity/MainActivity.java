@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                 if (item.getTitle().equals(getString(R.string.main_open_search)) && !mPortManager.isIsSearch()) {
                     if (open()) {
                         item.setTitle(R.string.main_close_search);
-                        item.setIcon(R.drawable.ic_hdr_strong_white_24dp);
+//                        item.setIcon(R.drawable.ic_hdr_strong_white_24dp);
                         cmd = "41";
                     }
 
@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                 } else {
                     close();
                     item.setTitle(R.string.main_open_search);
-                    item.setIcon(R.drawable.ic_hdr_weak_white_24dp);
+//                    item.setIcon(R.drawable.ic_hdr_weak_white_24dp);
                 }
                 break;
 
@@ -198,15 +198,22 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                 builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Log.d("bbbbbbbbfe",new File(com.shrw.duke.prison_roll_call.common.Constant.saveNoteFilePath).exists()+"");
+//                        Log.d("bbbbbbbbfe", new File(com.shrw.duke.prison_roll_call.common.Constant.saveNoteFilePath).exists() + "");
 //                        if (){
-//
+///storage/emulated/0/.estrongs/recycle/1505784620703/storage/emulated/0/roster/es_recycle_content/roster.txt
 //                        }
                         EditText editRename = (EditText) view.findViewById(R.id.dialog_rename_file);
                         TextView editFilePath = (TextView) view.findViewById(R.id.dialog_file_path);
                         String fileName = editRename.getText().toString();
                         editFilePath.setText(com.shrw.duke.prison_roll_call.common.Constant.saveNoteFilePath);
                         final StringBuilder filePath = new StringBuilder(com.shrw.duke.prison_roll_call.common.Constant.saveNoteFilePath);
+
+                        File file = new File(filePath.toString());
+                        if (!file.exists()) {
+                            file.mkdirs();
+                        }
+
+
                         filePath.append(fileName);
                         filePath.append(".txt");
                         final StringBuilder content = new StringBuilder();
@@ -221,10 +228,10 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                         }
                         final String path = filePath.toString();
                         final String text = content.toString();
-                        if (FileUtil.isFileExists(filePath.toString())){
+                        if (FileUtil.isFileExists(filePath.toString())) {
                             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                             builder.setTitle("提示");
-                            builder.setMessage(R.string.isFileExists);
+                            builder.setMessage(getString(R.string.isFileExists, fileName));
                             builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -234,9 +241,9 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                             builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    if (FileUtil.writeFileFromString(path, text)){
+                                    if (FileUtil.writeFileFromString(path, text)) {
                                         ToastUtil.showToast(getString(R.string.save_success));
-                                    }else {
+                                    } else {
                                         ToastUtil.showToast(getString(R.string.save_fail));
                                     }
                                 }
@@ -245,10 +252,10 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                             return;
                         }
 
-                        Log.e("mUncalledHint:", "path:" + filePath + "\t" + content.toString());
-                        if (FileUtil.writeFileFromString(filePath.toString(), content.toString())){
+//                        Log.e("mUncalledHint:", "path:" + filePath + "\t" + content.toString());
+                        if (FileUtil.writeFileFromString(filePath.toString(), content.toString())) {
                             ToastUtil.showToast(getString(R.string.save_success));
-                        }else {
+                        } else {
                             ToastUtil.showToast(getString(R.string.save_fail));
                         }
 
@@ -273,15 +280,16 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                 //选择名单
                 if (data != null) {
                     bundle = data.getExtras();
-                    String file_path = bundle.getString(SDCardActivity.FILE_PATH);
+                    final String file_path = bundle.getString(SDCardActivity.FILE_PATH);
                     if (!TextUtils.isEmpty(file_path)) {
-                        Log.d(TAG, file_path);
+//                        Log.d(TAG, file_path);
                         mFilePath = file_path;
                         String fileContent = FileUtil.readFileContent(file_path, "utf-8", "\n", 1024);
-                        PreferencesUtils.putString(this, Constant.FILE_PATH, file_path);
+                        PreferencesUtils.putString(MainActivity.this, Constant.FILE_PATH, file_path);
                         if (!TextUtils.isEmpty(fileContent))
                             splitFileContent(fileContent);
-                        Log.d(TAG, fileContent);
+
+//                        Log.d(TAG, fileContent);
                     }
                 }
                 break;
@@ -365,10 +373,13 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
             mLinear.setVisibility(View.VISIBLE);
 
             if (mPeoples == null || mPeoples.size() == 0) {
+
                 String fileContent = FileUtil.readFileContent(mFilePath, "utf-8", "\n", 1024);
                 if (!TextUtils.isEmpty(fileContent)) {
                     splitFileContent(fileContent);
                 }
+
+
             }
             //第一次自动选择未到页面
             if (mNameList != null && mNameList.size() > 0) {
@@ -384,7 +395,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
     }
 
     //修剪文件内容
-    private List<String> splitFileContent(String fileContent) {
+    private List<PeopleRoll> splitFileContent(String fileContent) {
         HasToFragment.mPeopleRollList.clear();
         mPeoples = new ArrayList<>();
         mRfidNumberList = new ArrayList<>();
@@ -395,10 +406,10 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 
         String[] files = fileContent.replace(" ", "\\t").split("\\n");
         int len = files.length;
-        Log.w(TAG, Arrays.toString(files));
+//        Log.w(TAG, Arrays.toString(files));
         for (int i = 1; i < len; i++) {
             //行
-            Log.w(TAG + "rows:", files[i]);
+//            Log.w(TAG + "rows:", files[i]);
             String[] rows = files[i].split("\\t");
             if (rows.length == 6 && "0".equals(rows[4])) {
                 PeopleRoll peopleRoll = new PeopleRoll(rows[0], rows[1], rows[2], rows[3], rows[4], rows[5]);
@@ -412,7 +423,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 
         }
         mCount = mPeoples.size();
-        return null;
+        return mPeoples;
     }
 
     /**
@@ -512,7 +523,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                             }
                         }
                     });
-                    Log.d("读取数据：", data);
+//                    Log.d("读取数据：", data);
                 }
                 break;
             case "43":
@@ -555,7 +566,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                         mHasToFragmentArgListener.onData(this, people, com.shrw.duke.prison_roll_call.common.Constant.HAS_TO_TYPE);
 //                        Log.e(TAG + "\t", people.toString());
                     }
-                    Log.e(TAG + "\t", (String) o);
+//                    Log.e(TAG + "\t", (String) o);
                 }
                 break;
 
@@ -575,6 +586,11 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                 //HasToFragment-->this
                 break;
 
+            case com.shrw.duke.prison_roll_call.common.Constant.REFRESH:
+                //HasToFragment-->this
+
+                break;
+
             default:
                 break;
         }
@@ -591,7 +607,7 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
-        Log.e("bvnv","onBackPressed()");
+//        Log.e("bvnv", "onBackPressed()");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("退出");
         builder.setMessage("是否退出应用？");
@@ -609,6 +625,11 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
             }
         });
         builder.show();
+    }
+
+    public List<PeopleRoll> getPeopleList() {
+        String fileContent = FileUtil.readFileContent(mFilePath, "utf-8", "\n", 1024);
+        return splitFileContent(fileContent);
     }
 
 

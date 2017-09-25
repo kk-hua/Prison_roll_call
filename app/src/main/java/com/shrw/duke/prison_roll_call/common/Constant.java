@@ -16,10 +16,14 @@ public class Constant {
     public static final int HAS_TO_TYPE = 0x04;//已到
     public static final int NOTE_TYPE = 0x05;//已到
     public static final int PORT_DATA_TYPE = 0x06;//已到
+    public static final int REFRESH = 0X07;
 
     //43指令
     public static final String SEND_CMD = "0203040500190000430000FF011F00050000001A011200FFBB";
 
-    public static final String saveNoteFilePath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/PrisonRoolCall/";
+//    public static final String saveNoteFilePath = Environment.getDataDirectory().getAbsolutePath()+"/PrisonRoolCall/";
+    public static final String saveNoteFilePath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/PrisonRoolCall/note/";
+
+    public static final String readFilePath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/PrisonRoolCall/rool/";
 
 }

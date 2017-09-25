@@ -73,8 +73,8 @@ public class SDCardActivity extends AppCompatActivity implements OnRecyclerViewI
 
     private void readDOCFile() {
         List<File> m = new ArrayList<>();
-        m.add(new File(Environment.getExternalStorageDirectory().toString()));
-//        m.add(new File(Environment.getExternalStorageDirectory() + "/dzsh/"));
+//        m.add(new File(Environment.getExternalStorageDirectory().getAbsolutePath().toString()+"/wenyuan"));
+        m.add(new File(Constant.readFilePath));
         Observable.from(m)
                 .flatMap(new Func1<File, Observable<File>>() {
                     @Override

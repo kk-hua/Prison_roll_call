@@ -130,7 +130,7 @@ public class FileUtil {
         }
     }
 
-    public static String FormetFileSize(long fileS) {
+    public static String formetFileSize(long fileS) {
         DecimalFormat df = new DecimalFormat("#.00");
         String fileSizeString = "";
         String wrongSize = "0B";

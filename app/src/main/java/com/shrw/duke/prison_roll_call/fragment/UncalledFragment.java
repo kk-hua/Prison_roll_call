@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 
 import com.shrw.duke.portlibrary.common.bean.type18.TagBase18;
 import com.shrw.duke.prison_roll_call.R;
+import com.shrw.duke.prison_roll_call.activity.MainActivity;
 import com.shrw.duke.prison_roll_call.adapter.UncalledAdapter;
 import com.shrw.duke.prison_roll_call.common.Constant;
 import com.shrw.duke.prison_roll_call.entity.FileInfo;
@@ -43,17 +45,18 @@ import butterknife.ButterKnife;
 
 /**
  */
-public class UncalledFragment extends Fragment implements OnRecyclerViewItemClickListener<PeopleRoll>, OnRecyclerViewItemLongClickListener<PeopleRoll>, OnActivityOrFragmentArgListener<TagBase18.Tag18>, PopupMenu.OnMenuItemClickListener {
+public class UncalledFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, OnRecyclerViewItemClickListener<PeopleRoll>, OnRecyclerViewItemLongClickListener<PeopleRoll>, OnActivityOrFragmentArgListener<TagBase18.Tag18>, PopupMenu.OnMenuItemClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String PEOPLE_ROLL_LIST = "people_roll_list";
     private static final String NAME_LIST = "PEOPLE_NAME_LIST";
 
     private OnActivityOrFragmentArgListener mMainActivityArgListener = null;
+    private MainActivity mMainActivity = null;
 
     private List<String> mRfidList; //rfid列表
     private List<String> mNameList; //名字列表
-    private List<PeopleRoll> mPeopleRollList; //名字列表
+    private List<PeopleRoll> mPeopleRollList = new ArrayList<>(); //名字列表
     private Map<String, PeopleRoll> mPeopleRollMap;
     private PeopleRoll mEditPeopleFlag = null;//备注未到人员
 
@@ -63,6 +66,10 @@ public class UncalledFragment extends Fragment implements OnRecyclerViewItemClic
 
     @BindView(R.id.unCalledFragment_recycler_list)
     RecyclerView mUncalledRecycle;
+
+    @BindView(R.id.uncalled_swipeRefresh)
+    SwipeRefreshLayout mRefreshLayout;
+
     @BindView(R.id.uncalledFragment_Tv_null_hint)
     TextView mHint;
     @BindView(R.id.tv_uncalled_peopleNum)
@@ -131,12 +138,17 @@ public class UncalledFragment extends Fragment implements OnRecyclerViewItemClic
         mUncalledRecycle.setAdapter(mUncalledAdapter);
         mUncalledAdapter.setOnItemClickListener(this);
         mUncalledAdapter.setOnItemLongClickListener(this);
+        mRefreshLayout.setOnRefreshListener(this);
     }
 
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+        if (mMainActivity == null)
+            mMainActivity = (MainActivity) context;
+
         if (context instanceof OnActivityOrFragmentArgListener) {
             if (mMainActivityArgListener == null)
                 mMainActivityArgListener = (OnActivityOrFragmentArgListener) context;
@@ -187,6 +199,11 @@ public class UncalledFragment extends Fragment implements OnRecyclerViewItemClic
                     break;
                 case Constant.UNCALLED_TYPE:
                     break;
+
+                case Constant.REFRESH:
+
+                    break;
+
                 default:
                     break;
             }
@@ -282,12 +299,22 @@ public class UncalledFragment extends Fragment implements OnRecyclerViewItemClic
         }
     }
 
-    public List<PeopleRoll> getUnCalledPeopleRool(){
-        if (mPeopleRollList!=null){
+    public List<PeopleRoll> getUnCalledPeopleRool() {
+        if (mPeopleRollList != null) {
             return mPeopleRollList;
         }
         return null;
     }
 
 
+    @Override
+    public void onRefresh() {
+        if (mMainActivity != null) {
+            mPeopleRollList = mMainActivity.getPeopleList();
+        }
+        mUncalledAdapter.add(mPeopleRollList);
+        mPeopleNum.setText(String.valueOf(mPeopleRollList.size()));
+//        mUncalledAdapter.notifyDataSetChanged();
+        mRefreshLayout.setRefreshing(false);
+    }
 }

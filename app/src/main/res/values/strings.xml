@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">蜜蜂考勤</string>
     <string name="null_string">请选择文件！</string>
-    <string name="main_open_search">open</string>
-    <string name="main_close_search">close</string>
+    <string name="main_open_search">开</string>
+    <string name="main_close_search">关</string>
     <string name="main_import_file">导入文件</string>
     <string name="main_export_file">导出文件</string>
     <string name="file_name">文件名</string>
@@ -34,6 +34,6 @@
     <string name="save_success">保存成功</string>
     <string name="save_fail">失败</string>
     <string name="save_file">保存文件</string>
-    <string name="save_path">"保存路径：/storage/emulated/0/PrisonRoolCall"</string>
+    <string name="save_path">"保存路径：/PrisonRoolCall/note"</string>
     <string name="isFileExists">%1$s已存在，是否覆盖该文件</string>
 </resources>
